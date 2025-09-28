@@ -10,6 +10,8 @@ private:
 public:
     VectorMedicion();
     ~VectorMedicion();
+    int getCantidad();
+    ReporteMedicion* getMedicionPorIndice(int i);
     bool agregarMedicion(ReporteMedicion* medicion);
     bool eliminarMedicion(int idMedicion);
     ReporteMedicion** buscarMedicion(int idMedicion);

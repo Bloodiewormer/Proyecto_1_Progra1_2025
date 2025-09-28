@@ -1,3 +1,4 @@
+// C++
 #pragma once
 #include <string>
 #include "Sucursal.h"
@@ -5,17 +6,16 @@
 #include "Instructor.h"
 #include "Clase.h"
 #include "ReporteMedicion.h"
+#include "Fecha.h"
 
 class UI
 {
 public:
-    // Banners y mensajes generales
     void mostrarBannerBienvenida();
     void mostrarBannerDespedida();
     void mostrarMensaje(std::string mensaje);
     void mostrarError(std::string mensaje);
 
-    // Menús principales y secundarios
     int mostrarMenuPrincipal();
     int mostrarMenuSucursales();
     int mostrarMenuClientes();
@@ -25,20 +25,17 @@ public:
     int mostrarMenuInformes();
     int mostrarMenuRutinas();
 
-    // Formularios de ingreso de datos - NUEVOS MÉTODOS
     Sucursal crearSucursal();
     Cliente crearCliente();
     Instructor crearInstructor();
     Clase crearClase(Instructor& instructor);
     ReporteMedicion crearReporteMedicion();
 
-    // Métodos de solicitud de datos
     int solicitarIdSucursal();
     int solicitarIdCliente();
     int solicitarIdInstructor();
     int solicitarIdClase();
 
-    // Utilidades
     void mostrarTitulo(std::string titulo);
     void limpiarPantalla();
     void pausarPantalla();
@@ -46,4 +43,6 @@ public:
     float solicitarFloat(std::string mensaje);
     std::string solicitarCadena(std::string mensaje);
     char solicitarCaracter(std::string mensaje);
+
+    Fecha solicitarFechaDDMMAAAA(std::string titulo);
 };

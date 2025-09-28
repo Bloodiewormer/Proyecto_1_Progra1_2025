@@ -22,25 +22,26 @@ Sucursal::~Sucursal()
 {
 }
 
-int Sucursal::getIdSucursal() const
+int Sucursal::getIdSucursal()
 {
-	return idSucursal;
+    return idSucursal;
 }
 
-
+int Sucursal::getCantidadClases()
+{
+    return clases.getCantidad();
+}
 
 bool Sucursal::agregarCliente(Cliente& cliente)
 {
-	return clientes.agregarCliente(&cliente);
+    return clientes.agregarCliente(&cliente);
 }
 
 Cliente* Sucursal::buscarCliente(int idCliente)
 {
-	Cliente** cli = clientes.buscarCliente(idCliente);
-	if (cli != nullptr) {
-		return *cli;
-	}
-	return nullptr;
+    Cliente** cli = clientes.buscarCliente(idCliente);
+    if (cli != nullptr) return *cli;
+    return nullptr;
 }
 
 void Sucursal::mostrarClientes()
@@ -55,12 +56,9 @@ bool Sucursal::agregarInstructor(Instructor& instructor)
 
 Instructor* Sucursal::buscarInstructor(int idInstructor)
 {
-	Instructor** instr = instructores.buscarInstructor(idInstructor);
-	if (instr != nullptr) {
-		return *instr;
-	}
-	return nullptr;
-   
+    Instructor** instr = instructores.buscarInstructor(idInstructor);
+    if (instr != nullptr) return *instr;
+    return nullptr;
 }
 
 void Sucursal::mostrarInstructores()
@@ -70,17 +68,15 @@ void Sucursal::mostrarInstructores()
 
 bool Sucursal::agregarClase(Clase& clase)
 {
-    if (clases.getCantidad() >= 8) return false; // Máximo 8 clases por sucursal
+    if (clases.getCantidad() >= 8) return false;
     return clases.agregarClase(&clase);
 }
 
 Clase* Sucursal::buscarClase(int idClase)
 {
-	Clase** cls = clases.buscarClase(idClase);
-	if (cls != nullptr) {
-		return *cls;
-	}
-	return nullptr;
+    Clase** cls = clases.buscarClase(idClase);
+    if (cls != nullptr) return *cls;
+    return nullptr;
 }
 
 void Sucursal::mostrarClases()
@@ -108,4 +104,26 @@ std::string Sucursal::toStringDetalle()
     oss << "Telefono: " << telefono << std::endl;
     oss << "Clientes registrados: " << clientes.getCantidad() << std::endl;
     return oss.str();
+}
+
+// NEW
+int Sucursal::getCantidadClientes()
+{
+    return clientes.getCantidad();
+}
+Cliente* Sucursal::getClientePorIndice(int i)
+{
+    return clientes.getClientePorIndice(i);
+}
+int Sucursal::getCantidadInstructores()
+{
+    return instructores.getCantidad();
+}
+Instructor* Sucursal::getInstructorPorIndice(int i)
+{
+    return instructores.getInstructorPorIndice(i);
+}
+Clase* Sucursal::getClasePorIndice(int i)
+{
+    return clases.getClasePorIndice(i);
 }

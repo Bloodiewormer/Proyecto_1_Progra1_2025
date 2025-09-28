@@ -10,6 +10,8 @@ private:
 public:
 	VectorInstructores();
 	~VectorInstructores();
+	int getCantidad();
+	Instructor* getInstructorPorIndice(int i);
 	bool agregarInstructor(Instructor* instructor);
 	bool eliminarInstructor(int idInstructor);
 	Instructor** buscarInstructor(int idInstructor);

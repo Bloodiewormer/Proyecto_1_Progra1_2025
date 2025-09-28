@@ -2,7 +2,7 @@
 
 VectorMedicion::VectorMedicion()
 {
-    capacidad = 10; // Máximo 10 mediciones por cliente según el proyecto
+    capacidad = 10; // Mï¿½ximo 10 mediciones por cliente segï¿½n el proyecto
     cantidad = 0;
     mediciones = new ReporteMedicion * [capacidad];
     for (int i = 0; i < capacidad; i++) {
@@ -13,6 +13,17 @@ VectorMedicion::VectorMedicion()
 VectorMedicion::~VectorMedicion()
 {
     delete[] mediciones;
+}
+
+int VectorMedicion::getCantidad()
+{
+    return cantidad;
+}
+
+ReporteMedicion* VectorMedicion::getMedicionPorIndice(int i)
+{
+    if (i < 0 || i >= cantidad) return nullptr;
+    return mediciones[i];
 }
 
 bool VectorMedicion::agregarMedicion(ReporteMedicion* medicion)

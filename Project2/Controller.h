@@ -1,3 +1,4 @@
+// File: 'Project2/Controller.h'  (add new helpers)
 #pragma once
 #include "GymsPowerLab.h"
 #include "UI.h"
@@ -10,7 +11,6 @@ private:
     UI interfaz;
     VectorEjercicio bateriaEjercicios;
 
-    // Métodos privados para cada funcionalidad
     void menuSucursales();
     void menuClientes();
     void menuInstructores();
@@ -19,7 +19,6 @@ private:
     void menuInformes();
     void menuRutinas();
 
-    // Funcionalidades específicas
     void agregarSucursal();
     void agregarCliente();
     void agregarInstructor();
@@ -29,6 +28,7 @@ private:
 
     void listarClientesPorSucursal();
     void listarInstructoresPorSucursal();
+    void listarClasesPorSucursal();    
     void mostrarDetalleCliente();
     void mostrarDetalleInstructor();
     void mostrarDetalleClase();
@@ -37,15 +37,15 @@ private:
     void matricularClienteEnClase();
     void generarRutina();
 
-    // Informes adicionales
-    void listarClientesPorInstructor(); //add
-    void listarInstructoresPorEspecialidad(); //add
+    void listarClientesPorInstructor();
+    void listarInstructoresPorEspecialidad();
 
-    // Validaciones
-    bool validarEspecialidadInstructor(std::string especialidad); //add
-    bool validarAreaEjercicio(std::string area); //add
+    bool validarEspecialidadInstructor(std::string especialidad);
+    bool validarAreaEjercicio(std::string area);
 
-    // Datos de prueba
+    // helper: intenta extraer la especialidad base del texto de tipo de clase
+    std::string obtenerEspecialidadDeTipo(std::string tipo);
+
     void cargarDatosPrueba();
 
 public:
@@ -53,4 +53,3 @@ public:
     ~Controller();
     void run();
 };
-

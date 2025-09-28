@@ -1,3 +1,5 @@
+// C++
+// File: 'Project2/VectorClientes.h' (add getter by index)
 #pragma once
 #include <iostream>
 #include "Cliente.h"
@@ -10,10 +12,14 @@ private:
 public:
 	VectorClientes();
 	~VectorClientes();
+	Cliente* getClientePorIndice(int i);
 	int getCantidad();
 	bool agregarCliente( Cliente* cliente);
 	Cliente** buscarCliente(int idCliente);
 	bool existeCliente(int idCliente);
 	void mostrarClientes();
-};
 
+	void toString();
+
+
+};

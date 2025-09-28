@@ -20,6 +20,12 @@ int VectorClases::getCantidad()
 	return cantidad;
 }
 
+Clase* VectorClases::getClasePorIndice(int i)
+{
+	if (i < 0 || i >= cantidad) return nullptr;
+	return clases[i];
+}
+
 bool VectorClases::agregarClase(Clase* clase)
 {
 	if (cantidad >= capacidad) return false; // No hay espacio

@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include "VectorMedicion.h"
+#include "Instructor.h"
+#include "Ejercicio.h"
 #include <sstream>
 class Cliente
 {
@@ -9,13 +11,16 @@ private:
     std::string nombre;
     std::string correoElectronico;
     std::string telefono;
-    std::string fechaNacimiento;
+    Fecha fechaNacimiento;
     char genero; // 'M' o 'F'
-    std::string fechaInscripcion;
+    Fecha fechaInscripcion;
     VectorMedicion historicoMediciones;
+    Instructor* instructorAsignado;
+    Ejercicio* rutina[20];
+    int cantRutina;
 public:
     Cliente();
-    Cliente(int id, std::string& nombre, std::string& correo, std::string& telefono, std::string& fechaNac, char genero, std::string& fechaIns);
+    Cliente(int id, std::string& nombre, std::string& correo, std::string& telefono, Fecha& fechaNac, char genero, Fecha& fechaIns);
     ~Cliente();
 
     // Getters
@@ -23,16 +28,8 @@ public:
     void setIdCliente(int id);
     std::string getNombre();
     void setNombre(std::string& nombre);
-    std::string getCorreoElectronico();
-    void setCorreoElectronico(std::string& correo);
-    std::string getTelefono();
-    void setTelefono(std::string& telefono);
-    std::string getFechaNacimiento();
-    void setFechaNacimiento(std::string& fecha);
-    char getGenero();
-    void setGenero(char genero);
-    std::string getFechaInscripcion();
-    void setFechaInscripcion(std::string& fecha);
+    void setInstructorAsignado(Instructor* instr);
+    Instructor* getInstructorAsignado();
 
     // Mediciones
     bool agregarMedicion(ReporteMedicion& medicion);
@@ -40,6 +37,15 @@ public:
     ReporteMedicion* buscarMedicion(int idMedicion);
     bool existeMedicion(int idMedicion);
     void mostrarHistorialMediciones();
+    int getCantidadMediciones();
+    ReporteMedicion* getMedicionPorIndice(int i);
+    void mostrarHistorialMedicionesOrdenado(); // orden por fecha asc
+    ReporteMedicion* obtenerUltimaMedicion();
+    void limpiarRutina();
+    bool agregarEjercicioARutina(Ejercicio* e);
+    void mostrarRutina();
+
+    ReporteMedicion* getUltimaMedicion();
 
     std::string toString();
     std::string toStringDetalle();

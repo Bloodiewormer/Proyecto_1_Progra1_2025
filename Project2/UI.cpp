@@ -1,13 +1,13 @@
+// C++
 #include "UI.h"
 #include <iostream>
-#include <limits>
 
 void UI::mostrarBannerBienvenida() {
     limpiarPantalla();
     std::cout << "========================================\n";
     std::cout << "   Bienvenido al sistema PowerLab Gym   \n";
     std::cout << "========================================\n";
-	pausarPantalla();
+    pausarPantalla();
 }
 
 void UI::mostrarBannerDespedida() {
@@ -15,17 +15,19 @@ void UI::mostrarBannerDespedida() {
     std::cout << "\n========================================\n";
     std::cout << "   Gracias por usar PowerLab Gym System \n";
     std::cout << "========================================\n";
-	pausarPantalla();
+    pausarPantalla();
 }
 
 void UI::mostrarMensaje(std::string mensaje) {
     limpiarPantalla();
     std::cout << mensaje << std::endl;
+    pausarPantalla();
 }
 
 void UI::mostrarError(std::string mensaje) {
     limpiarPantalla();
     std::cout << "ERROR: " << mensaje << std::endl;
+    pausarPantalla();
 }
 
 void UI::mostrarTitulo(std::string titulo) {
@@ -114,7 +116,6 @@ int UI::mostrarMenuRutinas() {
     return solicitarEntero("Seleccione una opcion: ");
 }
 
-// Formularios de ingreso de datos
 Sucursal UI::crearSucursal() {
     limpiarPantalla();
     mostrarTitulo("Agregar Sucursal");
@@ -124,9 +125,6 @@ Sucursal UI::crearSucursal() {
     std::string correo = solicitarCadena("Correo electronico: ");
     std::string telefono = solicitarCadena("Telefono: ");
     return Sucursal(id, provincia, canton, correo, telefono);
-
-
-
 }
 
 Cliente UI::crearCliente() {
@@ -136,9 +134,9 @@ Cliente UI::crearCliente() {
     std::string nombre = solicitarCadena("Nombre completo: ");
     std::string correo = solicitarCadena("Correo electronico: ");
     std::string telefono = solicitarCadena("Telefono: ");
-    std::string fechaNac = solicitarCadena("Fecha de nacimiento (DD/MM/AAAA): ");
+    Fecha fechaNac = solicitarFechaDDMMAAAA("Fecha de nacimiento");
     char genero = solicitarCaracter("Genero (M/F): ");
-    std::string fechaIns = solicitarCadena("Fecha de inscripcion (DD/MM/AAAA): ");
+    Fecha fechaIns = solicitarFechaDDMMAAAA("Fecha de inscripcion");
 
     return Cliente(id, nombre, correo, telefono, fechaNac, genero, fechaIns);
 }
@@ -150,18 +148,28 @@ Instructor UI::crearInstructor() {
     std::string nombre = solicitarCadena("Nombre completo: ");
     std::string correo = solicitarCadena("Correo electronico: ");
     std::string telefono = solicitarCadena("Telefono: ");
-    std::string fechaNac = solicitarCadena("Fecha de nacimiento (DD/MM/AAAA): ");
+    Fecha fechaNac = solicitarFechaDDMMAAAA("Fecha de nacimiento");
 
     Instructor nuevo(id, nombre, correo, telefono, fechaNac);
 
-    // Agregar especialidades
-    mostrarMensaje("Agregue especialidades (CrossFit, HIIT, TRX, Pesas, Spinning, Cardio, Yoga, Zumba)");
-    mostrarMensaje("Escriba 'fin' para terminar");
+    mostrarMensaje("Agregue especialidades (CrossFit, HIIT, TRX, Pesas, Spinning, Cardio, Yoga, Zumba)\nEscriba 'fin' para terminar");
     std::string especialidad;
     while (true) {
         especialidad = solicitarCadena("Especialidad: ");
         if (especialidad == "fin") break;
-        nuevo.agregarEspecialidad(especialidad);
+
+        // Validacion simple aqui tambien para ayudar al usuario
+        std::string esp[8] = { "CrossFit","HIIT","TRX","Pesas","Spinning","Cardio","Yoga","Zumba" };
+        bool ok = false;
+        for (int i = 0; i < 8; i++) if (especialidad == esp[i]) ok = true;
+        if (!ok) {
+            mostrarError("Especialidad invalida. Intente nuevamente.");
+            continue;
+        }
+
+        if (!nuevo.agregarEspecialidad(especialidad)) {
+            mostrarError("No se pudo agregar la especialidad (lista llena o invalida).");
+        }
     }
 
     return nuevo;
@@ -182,9 +190,9 @@ ReporteMedicion UI::crearReporteMedicion() {
     limpiarPantalla();
     mostrarTitulo("Crear Nuevo Reporte de Medicion");
     int id = solicitarEntero("ID de medicion: ");
-    std::string fecha = solicitarCadena("Fecha de medicion (DD/MM/AAAA): ");
+    Fecha fecha = solicitarFechaDDMMAAAA("Fecha de medicion");
     float peso = solicitarFloat("Peso (kg): ");
-    float estatura = solicitarFloat("Estatura (m): ");
+    float estatura = solicitarFloat("Estatura (cm): ");
     float porcentajeGrasa = solicitarFloat("Porcentaje de grasa (%): ");
     float porcentajeMusculo = solicitarFloat("Porcentaje de musculo (%): ");
     int edadMetabolica = solicitarEntero("Edad metabolica: ");
@@ -198,53 +206,31 @@ ReporteMedicion UI::crearReporteMedicion() {
         edadMetabolica, porcentajeGrasaVisceral, cintura, cadera, pecho, muslo);
 }
 
-// M�todos de solicitud de datos
-int UI::solicitarIdSucursal() {
-    return solicitarEntero("Ingrese el codigo de la sucursal: ");
-}
-
-int UI::solicitarIdCliente() {
-    return solicitarEntero("Ingrese el ID del cliente: ");
-}
-
-int UI::solicitarIdInstructor() {
-    return solicitarEntero("Ingrese el ID del instructor: ");
-}
-
-int UI::solicitarIdClase() {
-    return solicitarEntero("Ingrese el ID de la clase: ");
-}
+int UI::solicitarIdSucursal() { return solicitarEntero("Ingrese el codigo de la sucursal: "); }
+int UI::solicitarIdCliente()  { return solicitarEntero("Ingrese el ID del cliente: "); }
+int UI::solicitarIdInstructor(){ return solicitarEntero("Ingrese el ID del instructor: "); }
+int UI::solicitarIdClase()    { return solicitarEntero("Ingrese el ID de la clase: "); }
 
 float UI::solicitarFloat(std::string mensaje) {
     float valor;
     std::cout << mensaje;
     while (!(std::cin >> valor)) {
         std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Entrada invalida. Intente de nuevo: ";
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return valor;
 }
 
-// Utilidades
-void UI::limpiarPantalla() {
-    system("cls");
-}
-
-void UI::pausarPantalla() {
-    system("pause");
-}
+void UI::limpiarPantalla() { system("cls"); }
+void UI::pausarPantalla()  { system("pause"); }
 
 int UI::solicitarEntero(std::string mensaje) {
     int valor;
     std::cout << mensaje;
     while (!(std::cin >> valor)) {
         std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Entrada invalida. Intente de nuevo: ";
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return valor;
 }
 
@@ -252,6 +238,7 @@ std::string UI::solicitarCadena(std::string mensaje) {
     std::string valor;
     std::cout << mensaje;
     std::getline(std::cin, valor);
+    if (valor.size() == 0) std::getline(std::cin, valor);
     return valor;
 }
 
@@ -259,6 +246,20 @@ char UI::solicitarCaracter(std::string mensaje) {
     char valor;
     std::cout << mensaje;
     std::cin >> valor;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return valor;
+}
+
+Fecha UI::solicitarFechaDDMMAAAA(std::string titulo) {
+    while (true) {
+        std::cout << titulo << " (DD/MM/AAAA)\n";
+        int d = solicitarEntero("Dia: ");
+        int m = solicitarEntero("Mes: ");
+        int a = solicitarEntero("Anio: ");
+        Fecha f(d, m, a);
+        if (f.esValida(f)) {
+            return  f;
+        } else {
+            mostrarError("Fecha invalida, intente de nuevo.");
+        }
+    }
 }

@@ -1,8 +1,10 @@
+
 #pragma once
 #include <iostream>
 #include "VectorClientes.h"
 #include "VectorInstructores.h"
 #include "VectorClases.h"
+
 class Sucursal
 {
 private:
@@ -18,7 +20,8 @@ public:
     Sucursal();
     Sucursal(int id, std::string& provincia, std::string& canton, std::string& correo, std::string& telefono);
     ~Sucursal();
-	int getIdSucursal() const;
+    int getCantidadClases();
+    int getIdSucursal();
     bool agregarCliente(Cliente& cliente);
     Cliente* buscarCliente(int idCliente);
     void mostrarClientes();
@@ -30,4 +33,10 @@ public:
     void mostrarClases();
     std::string toString();
     std::string toStringDetalle();
+
+    int getCantidadClientes();
+    Cliente* getClientePorIndice(int i);
+    int getCantidadInstructores();
+    Instructor* getInstructorPorIndice(int i);
+    Clase* getClasePorIndice(int i);
 };

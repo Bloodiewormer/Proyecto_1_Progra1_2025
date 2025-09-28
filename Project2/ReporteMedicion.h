@@ -2,11 +2,13 @@
 #include <iostream>
 #include <sstream>
 
+#include "Fecha.h"
+
 class ReporteMedicion
 {
 private:
     int idMedicion;
-    std::string fecha;
+    Fecha fecha;
     float peso;
     float estatura;
     float porcentajeGrasa;
@@ -18,20 +20,19 @@ private:
 
 public:
     ReporteMedicion();
-    ReporteMedicion(int id, std::string& fecha, float peso, float estatura, float porcentajeGrasa, float porcentajeMusculo, int edadMetabolica, float porcentajeGrasaVisceral, float cintura, float cadera, float pecho, float muslo);
+    ReporteMedicion(int id, Fecha& fecha, float peso, float estatura, float porcentajeGrasa, float porcentajeMusculo, int edadMetabolica, float porcentajeGrasaVisceral, float cintura, float cadera, float pecho, float muslo);
     ~ReporteMedicion();
 
     // Getters
     int getIdMedicion() const;
     float getIMC() const;
     float getPeso() const;
-    std::string getFecha() const;
+    Fecha getFecha() const;
 
-    // Métodos de cálculo
+    // Mï¿½todos de cï¿½lculo
     std::string getClasificacionIMC() const;
     bool esAltoRiesgo() const;
-    float calcularVasosAgua() const;
-    float calcularProteinaRequerida(char genero, bool haceEjercicio) const;
+    float calcularVasosAgua();
 
     std::string toString();
     std::string toStringDetalle();

@@ -1,14 +1,20 @@
-//
-// Created by Bloodie on 27/9/2025.
-//
+#pragma once
+#include <string>
 
-#ifndef PROYECTO_1_PROGRA1_2025_FECHA_H
-#define PROYECTO_1_PROGRA1_2025_FECHA_H
+class Fecha {
+private:
+    int dia;
+    int mes;
+    int anio;
+public:
 
+    Fecha();
+    Fecha(int d, int m, int a);
+    ~Fecha();
+    int getDia();
+    int getMes();
+    int getAnio();
 
-class Fecha
-{
+    bool esValida(Fecha f) ;
+    std::string toString() ;
 };
-
-
-#endif //PROYECTO_1_PROGRA1_2025_FECHA_H

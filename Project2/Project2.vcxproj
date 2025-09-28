@@ -23,6 +23,7 @@
     <ClInclude Include="Cliente.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Ejercicio.h" />
+    <ClInclude Include="Fecha.h" />
     <ClInclude Include="GymsPowerLab.h" />
     <ClInclude Include="Instructor.h" />
     <ClInclude Include="ReporteMedicion.h" />
@@ -40,6 +41,7 @@
     <ClCompile Include="Cliente.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Ejercicio.cpp" />
+    <ClCompile Include="Fecha.cpp" />
     <ClCompile Include="GymsPowerLab.cpp" />
     <ClCompile Include="Instructor.cpp" />
     <ClCompile Include="main.cpp" />

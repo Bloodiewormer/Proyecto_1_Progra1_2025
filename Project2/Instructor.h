@@ -1,6 +1,8 @@
+// Project2/Instructor.h
 #pragma once
 #include <iostream>
 #include <sstream>
+#include "Fecha.h"
 
 class Instructor
 {
@@ -9,19 +11,19 @@ private:
     std::string nombre;
     std::string correoElectronico;
     std::string telefono;
-    std::string fechaNacimiento;
-	std::string especialidades[10]; // Array to hold up to 10 specialties
+    Fecha fechaNacimiento;
+    std::string especialidades[10];
+
+
 
 public:
     Instructor();
-    Instructor(int id, std::string& nombre, std::string& correo, std::string& telefono, std::string& fechaNac);
+    Instructor(int id, std::string& nombre, std::string& correo, std::string& telefono, Fecha& fechaNac);
     ~Instructor();
 
-    // Getters
     int getIdInstructor() const;
     std::string getNombre() const;
-
-    // Especialidades
+    bool especialidadValida(std::string e);
     bool agregarEspecialidad(std::string especialidad);
     void mostrarEspecialidades();
     bool tieneEspecialidad(std::string especialidad);

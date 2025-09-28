@@ -1,3 +1,4 @@
+// C++
 #pragma once
 #include <iostream>
 #include <sstream>
@@ -35,5 +36,12 @@ public:
     void mostrarClientesPorSucursal(int idSucursal);
     void mostrarInstructoresPorSucursal(int idSucursal);
     void reporteIMCPorSucursal(int idSucursal);
+    void mostrarClientesPorInstructor(int idInstructor);
+    void mostrarInstructoresPorEspecialidad(std::string especialidad);
+    void mostrarClasesDeCliente(int idCliente);
 
+    void mostrarClasesPorSucursal(int idSucursal);
+
+    // NEW: simple helper to avoid \`(*suc)\`
+    int getCantidadClasesEnSucursal(int idSucursal);
 };

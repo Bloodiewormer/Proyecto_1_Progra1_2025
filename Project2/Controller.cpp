@@ -1,5 +1,4 @@
-// cpp
-// File: 'Project2/Controller.cpp'
+
 #include "Controller.h"
 
 Controller::Controller() {}
@@ -82,7 +81,7 @@ void Controller::menuClases()
         opcion = interfaz.mostrarMenuClases();
         switch (opcion) {
         case 1: agregarClase(); break;
-        case 2: listarClientesPorSucursal(); break;
+        case 2: listarClasesPorSucursal(); break;
         case 3: mostrarDetalleClase(); break;
         case 4: matricularClienteEnClase(); break;
         case 0: break;
@@ -168,10 +167,10 @@ void Controller::agregarCliente()
     std::string nombre = interfaz.solicitarCadena("Nombre: ");
     std::string correo = interfaz.solicitarCadena("Correo: ");
     std::string telefono = interfaz.solicitarCadena("Telefono: ");
-    std::string fechaNac = interfaz.solicitarCadena("Fecha nacimiento (dd/mm/aaaa): ");
+    Fecha fechaNac = interfaz.solicitarFechaDDMMAAAA("Fecha de nacimiento");
     std::string generoStr = interfaz.solicitarCadena("Genero (M/F): ");
     char genero = generoStr.empty() ? 'M' : generoStr[0];
-    std::string fechaIns = interfaz.solicitarCadena("Fecha inscripcion (dd/mm/aaaa): ");
+    Fecha fechaIns = interfaz.solicitarFechaDDMMAAAA("Fecha de inscripcion");
 
     Cliente* nuevo = new Cliente(id, nombre, correo, telefono, fechaNac, genero, fechaIns);
     if (gym.agregarClienteASucursal(idSucursal, *nuevo)) interfaz.mostrarMensaje("Cliente agregado exitosamente.");
@@ -181,27 +180,20 @@ void Controller::agregarCliente()
 void Controller::agregarInstructor()
 {
     int idSucursal = interfaz.solicitarIdSucursal();
-    if (!gym.existeSucursal(idSucursal)) {
-        interfaz.mostrarError("Sucursal no encontrada.");
-        return;
-    }
+    if (!gym.existeSucursal(idSucursal)) { interfaz.mostrarError("Sucursal no encontrada."); return; }
 
     int id = interfaz.solicitarEntero("ID del instructor: ");
-    if (gym.existeIDPersona(id)) {
-        interfaz.mostrarError("ID de instructor ya existe en el sistema.");
-        return;
-    }
+    if (gym.existeIDPersona(id)) { interfaz.mostrarError("ID de instructor ya existe en el sistema."); return; }
     std::string nombre = interfaz.solicitarCadena("Nombre: ");
     std::string correo = interfaz.solicitarCadena("Correo: ");
     std::string telefono = interfaz.solicitarCadena("Telefono: ");
-    std::string fechaNac = interfaz.solicitarCadena("Fecha nacimiento (dd/mm/aaaa): ");
+    Fecha fechaNac = interfaz.solicitarFechaDDMMAAAA("Fecha de nacimiento");
 
     Instructor* nuevo = new Instructor(id, nombre, correo, telefono, fechaNac);
 
-    // Especialidades (opcional, hasta 2)
-    std::string esp = interfaz.solicitarCadena("Especialidad (vacío para omitir): ");
+    std::string esp = interfaz.solicitarCadena("Especialidad (vacio para omitir): ");
     if (!esp.empty() && validarEspecialidadInstructor(esp)) nuevo->agregarEspecialidad(esp);
-    std::string esp2 = interfaz.solicitarCadena("Otra especialidad (vacío para omitir): ");
+    std::string esp2 = interfaz.solicitarCadena("Otra especialidad (vacio para omitir): ");
     if (!esp2.empty() && validarEspecialidadInstructor(esp2)) nuevo->agregarEspecialidad(esp2);
 
     if (gym.agregarInstructorASucursal(idSucursal, *nuevo)) interfaz.mostrarMensaje("Instructor agregado exitosamente.");
@@ -210,6 +202,8 @@ void Controller::agregarInstructor()
 
 void Controller::agregarClase()
 {
+    // mostrar ayuda
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
     Sucursal* suc = gym.buscarSucursal(idSucursal);
     if (suc == nullptr) {
@@ -217,6 +211,7 @@ void Controller::agregarClase()
         return;
     }
 
+    suc->mostrarInstructores();
     int idInstructor = interfaz.solicitarIdInstructor();
     Instructor* instructor = suc->buscarInstructor(idInstructor);
     if (instructor == nullptr) {
@@ -229,6 +224,13 @@ void Controller::agregarClase()
     int cupo = interfaz.solicitarEntero("Cupo: ");
     std::string horario = interfaz.solicitarCadena("Horario: ");
 
+
+    std::string espBase = obtenerEspecialidadDeTipo(tipo);
+    if (espBase != "" && !instructor->tieneEspecialidad(espBase)) {
+        interfaz.mostrarError("El instructor no posee la especialidad requerida: " + espBase);
+        return;
+    }
+
     Clase* nueva = new Clase(idClase, tipo, cupo, horario, *instructor);
     if (gym.agregarClaseASucursal(idSucursal, *nueva)) interfaz.mostrarMensaje("Clase agregada exitosamente.");
     else interfaz.mostrarError("No se pudo agregar la clase.");
@@ -236,31 +238,26 @@ void Controller::agregarClase()
 
 void Controller::agregarMedicion()
 {
+    interfaz.limpiarPantalla();
+    interfaz.mostrarTitulo("Agregar Medicion a Cliente");
+
+    // Ayuda visual para elegir
+    gym.mostrarSucursales();
+    int idSucursal = interfaz.solicitarIdSucursal();
+    gym.mostrarClientesPorSucursal(idSucursal);
+
     int idCliente = interfaz.solicitarIdCliente();
     Cliente* cliente = gym.buscarClienteEnTodasSucursales(idCliente);
     if (cliente == nullptr) {
-        interfaz.mostrarError("Cliente no encontrado.");
+        interfaz.mostrarError("El cliente no existe.");
         return;
     }
 
-    int idRep = interfaz.solicitarEntero("ID del reporte: ");
-    std::string fecha = interfaz.solicitarCadena("Fecha (dd/mm/aaaa): ");
-    float peso = interfaz.solicitarFloat("Peso (kg): ");
-    float alturaCm = interfaz.solicitarFloat("Altura (cm): ");
-    float imc = interfaz.solicitarFloat("IMC: ");
-    float musculo = interfaz.solicitarFloat("% Musculo: ");
-    int edadMet = interfaz.solicitarEntero("Edad metabolica: ");
-    float grasaVis = interfaz.solicitarFloat("Grasa visceral: ");
-    float pecho = interfaz.solicitarFloat("Pecho (cm): ");
-    float cintura = interfaz.solicitarFloat("Cintura (cm): ");
-    float cadera = interfaz.solicitarFloat("Cadera (cm): ");
-    float brazo = interfaz.solicitarFloat("Brazo (cm): ");
+    ReporteMedicion rep = interfaz.crearReporteMedicion();
+    ReporteMedicion* p = new ReporteMedicion(rep);
+    cliente->agregarMedicion(*p);
 
-    ReporteMedicion* nueva = new ReporteMedicion(idRep, fecha, peso, alturaCm, imc, musculo, edadMet,
-                                                 grasaVis, pecho, cintura, cadera, brazo);
-
-    if (cliente->agregarMedicion(*nueva)) interfaz.mostrarMensaje("Medicion agregada exitosamente.");
-    else interfaz.mostrarError("No se pudo agregar la medicion.");
+    interfaz.mostrarMensaje("Medicion agregada correctamente.");
 }
 
 void Controller::agregarEjercicio()
@@ -282,14 +279,23 @@ void Controller::agregarEjercicio()
 
 void Controller::listarClientesPorSucursal()
 {
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
     gym.mostrarClientesPorSucursal(idSucursal);
 }
 
 void Controller::listarInstructoresPorSucursal()
 {
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
     gym.mostrarInstructoresPorSucursal(idSucursal);
+}
+
+void Controller::listarClasesPorSucursal()
+{
+    gym.mostrarSucursales();
+    int idSucursal = interfaz.solicitarIdSucursal();
+    gym.mostrarClasesPorSucursal(idSucursal);
 }
 
 void Controller::mostrarDetalleCliente()
@@ -310,13 +316,19 @@ void Controller::mostrarDetalleInstructor()
 
 void Controller::mostrarDetalleClase()
 {
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
+    gym.mostrarClasesPorSucursal(idSucursal);
     int idClase = interfaz.solicitarIdClase();
     Sucursal* suc = gym.buscarSucursal(idSucursal);
     if (suc != nullptr) {
         Clase* clase = suc->buscarClase(idClase);
-        if (clase != nullptr) interfaz.mostrarMensaje(clase->toStringDetalle());
-        else interfaz.mostrarError("Clase no encontrada.");
+        if (clase != nullptr) {
+            interfaz.mostrarMensaje(clase->toStringDetalle());
+            clase->mostrarClientes(); // mostrar participantes reales
+        } else {
+            interfaz.mostrarError("Clase no encontrada.");
+        }
     } else {
         interfaz.mostrarError("Sucursal no encontrada.");
     }
@@ -324,23 +336,82 @@ void Controller::mostrarDetalleClase()
 
 void Controller::mostrarHistorialMediciones()
 {
+    interfaz.limpiarPantalla();
+    interfaz.mostrarTitulo("Historial de Mediciones");
+
+    gym.mostrarSucursales();
+    int idSucursal = interfaz.solicitarIdSucursal();
+    gym.mostrarClientesPorSucursal(idSucursal);
+
     int idCliente = interfaz.solicitarIdCliente();
     Cliente* cliente = gym.buscarClienteEnTodasSucursales(idCliente);
-    if (cliente != nullptr) cliente->mostrarHistorialMediciones();
-    else interfaz.mostrarError("Cliente no encontrado.");
+    if (cliente == nullptr) {
+        interfaz.mostrarError("El cliente no existe.");
+        return;
+    }
+
+    cliente->mostrarHistorialMediciones();
+
+    interfaz.pausarPantalla();
 }
 
 void Controller::reporteIMC()
 {
+    interfaz.limpiarPantalla();
+    interfaz.mostrarTitulo("Reporte IMC por Sucursal");
+
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
-    gym.reporteIMCPorSucursal(idSucursal);
+    Sucursal* suc = gym.buscarSucursal(idSucursal);
+    if (suc == nullptr) {
+        interfaz.mostrarError("Sucursal no encontrada.");
+        return;
+    }
+
+    // Contadores y listado de clientes por rango
+    int bajo = 0, normal = 0, sobre = 0, obes = 0;
+
+    std::cout << "=== Detalle por cliente ===\n";
+    int c = suc->getCantidadClientes();
+    for (int i = 0; i < c; i++) {
+        Cliente* cli = suc->getClientePorIndice(i);
+        if (cli == nullptr) continue;
+
+        ReporteMedicion* ult = cli->getUltimaMedicion();
+        if (ult == nullptr) continue;
+
+        float imc = ult->getIMC();
+        if (imc < 18.5f) { bajo++;  std::cout << "[Bajo]   " << cli->toString() << "\n"; }
+        else if (imc < 25.0f) { normal++; std::cout << "[Normal] " << cli->toString() << "\n"; }
+        else if (imc < 30.0f) { sobre++;  std::cout << "[Sobre]  " << cli->toString() << "\n"; }
+        else { obes++;  std::cout << "[Obes]   " << cli->toString() << "\n"; }
+    }
+
+    std::cout << "\n=== Totales ===\n";
+    std::cout << "Bajo peso: " << bajo << "\n";
+    std::cout << "Normal: " << normal << "\n";
+    std::cout << "Sobrepeso: " << sobre << "\n";
+    std::cout << "Obesidad: " << obes << "\n";
+    interfaz.pausarPantalla();
 }
+
 
 void Controller::matricularClienteEnClase()
 {
+    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
+
+    Sucursal* suc = gym.buscarSucursal(idSucursal);
+    if (suc == nullptr) { interfaz.mostrarError("Sucursal no encontrada."); return; }
+
+    std::cout << "\nClientes en la sucursal:\n";
+    suc->mostrarClientes();
     int idCliente = interfaz.solicitarIdCliente();
+
+    std::cout << "\nClases en la sucursal:\n";
+    suc->mostrarClases();
     int idClase = interfaz.solicitarIdClase();
+
     if (gym.matricularClienteEnClase(idSucursal, idCliente, idClase)) interfaz.mostrarMensaje("Cliente matriculado exitosamente.");
     else interfaz.mostrarError("No se pudo matricular el cliente.");
 }
@@ -352,19 +423,38 @@ void Controller::generarRutina()
     interfaz.mostrarMensaje("Seleccione ejercicios por area para crear la rutina.");
 }
 
-// Pendientes
+
 void Controller::listarClientesPorInstructor()
 {
+    interfaz.limpiarPantalla();
     interfaz.mostrarTitulo("Listar Clientes por Instructor");
+
+    gym.mostrarSucursales();
+    int idSuc = interfaz.solicitarIdSucursal();
+    gym.mostrarInstructoresPorSucursal(idSuc);
+
     int idInstructor = interfaz.solicitarIdInstructor();
-    interfaz.mostrarMensaje("Funcionalidad pendiente de implementar.");
+    interfaz.limpiarPantalla();
+    gym.mostrarClientesPorInstructor(idInstructor);
+    interfaz.pausarPantalla();
 }
 
 void Controller::listarInstructoresPorEspecialidad()
 {
+    interfaz.limpiarPantalla();
     interfaz.mostrarTitulo("Listar Instructores por Especialidad");
-    std::string especialidad = interfaz.solicitarCadena("Especialidad: ");
-    interfaz.mostrarMensaje("Funcionalidad pendiente de implementar.");
+    interfaz.mostrarMensaje("Especialidades validas: CrossFit, HIIT, TRX, Pesas, Spinning, Cardio, Yoga, Zumba");
+
+    std::string especialidad;
+    while (true) {
+        especialidad = interfaz.solicitarCadena("Especialidad: ");
+        if (validarEspecialidadInstructor(especialidad)) break;
+        interfaz.mostrarError("Especialidad invalida. Intente nuevamente.");
+    }
+
+    interfaz.limpiarPantalla();
+    gym.mostrarInstructoresPorEspecialidad(especialidad);
+    interfaz.pausarPantalla();
 }
 
 bool Controller::validarEspecialidadInstructor(std::string especialidad)
@@ -379,9 +469,19 @@ bool Controller::validarAreaEjercicio(std::string area)
     return (area == "pecho y triceps" || area == "biceps" || area == "piernas" || area == "espalda");
 }
 
+std::string Controller::obtenerEspecialidadDeTipo(std::string tipo)
+{
+    // busca una palabra clave de especialidad dentro del tipo de clase
+    std::string esp[] = { "CrossFit", "HIIT", "TRX", "Pesas", "Spinning", "Cardio", "Yoga", "Zumba" };
+    for (int i = 0; i < 8; i++) {
+        if (tipo == esp[i]) return esp[i];
+    }
+    return "";
+}
+
 void Controller::cargarDatosPrueba()
 {
-    // Sucursales en heap (sin copias)
+    // Sucursales
     std::string prov1 = "San Jose";
     std::string cant1 = "San Pedro";
     std::string correo1 = "sanjose@powerlab.com";
@@ -397,73 +497,70 @@ void Controller::cargarDatosPrueba()
     gym.agregarSucursal(sucursal1);
     gym.agregarSucursal(sucursal2);
 
-    // Instructores
+    // Instructores (Fecha)
     std::string nombre1 = "Carlos Rodriguez";
     std::string correoI1 = "carlos@powerlab.com";
     std::string telI1 = "8888-1111";
-    std::string fechaNacI1 = "15/03/1985";
-    Instructor* instructor1 = new Instructor(101, nombre1, correoI1, telI1, fechaNacI1);
-    std::string esp1 = "CrossFit"; std::string esp2 = "HIIT";
-    instructor1->agregarEspecialidad(esp1);
-    instructor1->agregarEspecialidad(esp2);
+    Fecha* fechaNacI1 = new Fecha(15, 3, 1985);
+    Instructor* instructor1 = new Instructor(101, nombre1, correoI1, telI1, *fechaNacI1);
+    instructor1->agregarEspecialidad("CrossFit");
+    instructor1->agregarEspecialidad("HIIT");
 
     std::string nombre2 = "Maria Gonzalez";
     std::string correoI2 = "maria@powerlab.com";
     std::string telI2 = "8888-2222";
-    std::string fechaNacI2 = "22/07/1990";
-    Instructor* instructor2 = new Instructor(102, nombre2, correoI2, telI2, fechaNacI2);
-    std::string esp3 = "Yoga"; std::string esp4 = "Spinning";
-    instructor2->agregarEspecialidad(esp3);
-    instructor2->agregarEspecialidad(esp4);
+    Fecha* fechaNacI2 = new Fecha(22, 7, 1990);
+    Instructor* instructor2 = new Instructor(102, nombre2, correoI2, telI2, *fechaNacI2);
+    instructor2->agregarEspecialidad("Yoga");
+    instructor2->agregarEspecialidad("Spinning");
 
     std::string nombre3 = "Jose Ramirez";
     std::string correoI3 = "jose@powerlab.com";
     std::string telI3 = "8888-3333";
-    std::string fechaNacI3 = "10/12/1988";
-    Instructor* instructor3 = new Instructor(103, nombre3, correoI3, telI3, fechaNacI3);
-    std::string esp5 = "Pesas"; std::string esp6 = "TRX";
-    instructor3->agregarEspecialidad(esp5);
-    instructor3->agregarEspecialidad(esp6);
+    Fecha* fechaNacI3 = new Fecha(10, 12, 1988);
+    Instructor* instructor3 = new Instructor(103, nombre3, correoI3, telI3, *fechaNacI3);
+    instructor3->agregarEspecialidad("Pesas");
+    instructor3->agregarEspecialidad("TRX");
 
     gym.agregarInstructorASucursal(1, *instructor1);
     gym.agregarInstructorASucursal(1, *instructor2);
     gym.agregarInstructorASucursal(2, *instructor3);
 
-    // Clientes
+    // Clientes (usar Fecha, no string)
     std::string nombreC1 = "Ana Soto";
     std::string correoC1 = "ana.soto@email.com";
     std::string telC1 = "8777-1111";
-    std::string fechaNacC1 = "25/05/1992";
-    std::string fechaInsC1 = "01/01/2024";
-    Cliente* cliente1 = new Cliente(201, nombreC1, correoC1, telC1, fechaNacC1, 'F', fechaInsC1);
+    Fecha* fechaNacC1 = new Fecha(25, 5, 1992);
+    Fecha* fechaInsC1 = new Fecha(1, 1, 2024);
+    Cliente* cliente1 = new Cliente(201, nombreC1, correoC1, telC1, *fechaNacC1, 'F', *fechaInsC1);
 
     std::string nombreC2 = "Pedro Morales";
     std::string correoC2 = "pedro.morales@email.com";
     std::string telC2 = "8777-2222";
-    std::string fechaNacC2 = "18/09/1987";
-    std::string fechaInsC2 = "15/01/2024";
-    Cliente* cliente2 = new Cliente(202, nombreC2, correoC2, telC2, fechaNacC2, 'M', fechaInsC2);
+    Fecha* fechaNacC2 = new Fecha(18, 9, 1987);
+    Fecha* fechaInsC2 = new Fecha(15, 1, 2024);
+    Cliente* cliente2 = new Cliente(202, nombreC2, correoC2, telC2, *fechaNacC2, 'M', *fechaInsC2);
 
     std::string nombreC3 = "Lucia Herrera";
     std::string correoC3 = "lucia.herrera@email.com";
     std::string telC3 = "8777-3333";
-    std::string fechaNacC3 = "30/11/1995";
-    std::string fechaInsC3 = "20/02/2024";
-    Cliente* cliente3 = new Cliente(203, nombreC3, correoC3, telC3, fechaNacC3, 'F', fechaInsC3);
+    Fecha* fechaNacC3 = new Fecha(30, 11, 1995);
+    Fecha* fechaInsC3 = new Fecha(20, 2, 2024);
+    Cliente* cliente3 = new Cliente(203, nombreC3, correoC3, telC3, *fechaNacC3, 'F', *fechaInsC3);
 
     std::string nombreC4 = "Roberto Castro";
     std::string correoC4 = "roberto.castro@email.com";
     std::string telC4 = "8777-4444";
-    std::string fechaNacC4 = "12/04/1983";
-    std::string fechaInsC4 = "05/03/2024";
-    Cliente* cliente4 = new Cliente(204, nombreC4, correoC4, telC4, fechaNacC4, 'M', fechaInsC4);
+    Fecha* fechaNacC4 = new Fecha(12, 4, 1983);
+    Fecha* fechaInsC4 = new Fecha(5, 3, 2024);
+    Cliente* cliente4 = new Cliente(204, nombreC4, correoC4, telC4, *fechaNacC4, 'M', *fechaInsC4);
 
     std::string nombreC5 = "Sofia Jimenez";
     std::string correoC5 = "sofia.jimenez@email.com";
     std::string telC5 = "8777-5555";
-    std::string fechaNacC5 = "08/08/1993";
-    std::string fechaInsC5 = "10/03/2024";
-    Cliente* cliente5 = new Cliente(205, nombreC5, correoC5, telC5, fechaNacC5, 'F', fechaInsC5);
+    Fecha* fechaNacC5 = new Fecha(8, 8, 1993);
+    Fecha* fechaInsC5 = new Fecha(10, 3, 2024);
+    Cliente* cliente5 = new Cliente(205, nombreC5, correoC5, telC5, *fechaNacC5, 'F', *fechaInsC5);
 
     gym.agregarClienteASucursal(1, *cliente1);
     gym.agregarClienteASucursal(1, *cliente2);
@@ -544,43 +641,36 @@ void Controller::cargarDatosPrueba()
     Ejercicio* ejercicio8 = new Ejercicio(8, nombreEj8, areaEj8, descEj8, 3, 10, 70.0f);
     bateriaEjercicios.agregarEjercicio(ejercicio8);
 
-    // Mediciones
+    // Mediciones (usar Fecha, no string)
     Cliente* clienteAna = gym.buscarClienteEnTodasSucursales(201);
     Cliente* clientePedro = gym.buscarClienteEnTodasSucursales(202);
     Cliente* clienteLucia = gym.buscarClienteEnTodasSucursales(203);
 
     if (clienteAna != nullptr) {
-        std::string fechaMed1 = "01/02/2024";
+        Fecha fechaMed1(1, 2, 2024);
         ReporteMedicion* medicion1 = new ReporteMedicion(1, fechaMed1, 65.5f, 165.0f, 24.1f, 35.2f, 28, 8.5f,
                                                          78.0f, 95.0f, 88.0f, 55.0f);
         clienteAna->agregarMedicion(*medicion1);
 
-        std::string fechaMed2 = "01/03/2024";
+        Fecha fechaMed2(1, 3, 2024);
         ReporteMedicion* medicion2 = new ReporteMedicion(2, fechaMed2, 64.8f, 165.0f, 23.8f, 36.0f, 27, 8.2f,
                                                          77.0f, 94.5f, 87.5f, 54.5f);
         clienteAna->agregarMedicion(*medicion2);
     }
 
     if (clientePedro != nullptr) {
-        std::string fechaMed3 = "20/02/2024";
+        Fecha fechaMed3(20, 2, 2024);
         ReporteMedicion* medicion3 = new ReporteMedicion(3, fechaMed3, 78.2f, 175.0f, 25.5f, 42.1f, 26, 9.2f,
                                                          100.0f, 88.0f, 96.0f, 36.0f);
         clientePedro->agregarMedicion(*medicion3);
     }
 
     if (clienteLucia != nullptr) {
-        std::string fechaMed4 = "25/02/2024";
+        Fecha fechaMed4(25, 2, 2024);
         ReporteMedicion* medicion4 = new ReporteMedicion(4, fechaMed4, 58.3f, 162.0f, 22.2f, 33.8f, 29, 7.8f,
                                                          84.0f, 70.0f, 94.0f, 28.0f);
         clienteLucia->agregarMedicion(*medicion4);
     }
 
-    interfaz.mostrarMensaje("Datos de prueba cargados exitosamente:");
-    interfaz.mostrarMensaje("- 2 Sucursales (San Jose y Cartago)");
-    interfaz.mostrarMensaje("- 5 Clientes distribuidos en ambas sucursales");
-    interfaz.mostrarMensaje("- 3 Instructores con especialidades variadas");
-    interfaz.mostrarMensaje("- 3 Clases grupales activas");
-    interfaz.mostrarMensaje("- 8 Ejercicios de diferentes areas corporales");
-    interfaz.mostrarMensaje("- Reportes de mediciones para algunos clientes");
-    interfaz.mostrarMensaje("- Matriculas de clientes en clases");
+    interfaz.mostrarMensaje("Datos de prueba cargados exitosamente:\n- 2 Sucursales (San Jose y Cartago)\n- 5 Clientes\n- 3 Instructores\n- 3 Clases\n- 8 Ejercicios\n- Mediciones y Matriculas creadas");
 }

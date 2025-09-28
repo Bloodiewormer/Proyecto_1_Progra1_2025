@@ -15,6 +15,17 @@ VectorInstructores::~VectorInstructores()
     delete[] instructores;
 }
 
+int VectorInstructores::getCantidad()
+{
+    return cantidad;
+}
+
+Instructor* VectorInstructores::getInstructorPorIndice(int i)
+{
+    if (i < 0 || i >= cantidad) return nullptr;
+    return instructores[i];
+}
+
 bool VectorInstructores::agregarInstructor(Instructor* instructor)
 {
     if (cantidad >= capacidad) return false; // No hay espacio

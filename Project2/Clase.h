@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include "Instructor.h"
+#include "Cliente.h"
 #include "VectorClientes.h"
 
 class Clase
@@ -16,22 +17,22 @@ private:
 
 public:
     Clase();
-    Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor& instructor);
-    ~Clase();
+Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor& instructor);    ~Clase();
 
     // Getters
-    int getIdClase() ;
-    std::string getTipoClase() ;
-    int getCapacidadMaxima() ;
-    int getCuposDisponibles() ;
-    int getCantidadInscritos() ;
-    Instructor getInstructor() ;
+    int getIdClase();
+    std::string getTipoClase();
+    int getCapacidadMaxima();
+    int getCuposDisponibles();
+    int getCantidadInscritos();
+    Instructor getInstructor();
 
-    // Gestión de clientes
+    // Gestiï¿½n de clientes
     bool agregarCliente(Cliente& cliente);
     Cliente* buscarCliente(int idCliente);
     void mostrarClientes();
     bool estaLlena();
+    bool tieneCliente(int idCliente);
 
     std::string toString();
     std::string toStringDetalle();

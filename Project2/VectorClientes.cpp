@@ -15,6 +15,12 @@ VectorClientes::~VectorClientes()
     delete[] clientes;
 }
 
+Cliente* VectorClientes::getClientePorIndice(int i)
+{
+    if (i < 0 || i >= cantidad) return nullptr;
+    return clientes[i];
+}
+
 int VectorClientes::getCantidad()
 {
     return cantidad;
@@ -58,3 +64,5 @@ void VectorClientes::mostrarClientes()
         std::cout << i + 1 << ". " << clientes[i]->toString() << std::endl;
     }
 }
+
+
