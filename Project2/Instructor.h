@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <sstream>
-#include "VectorStrings.h"
 
 class Instructor
 {
@@ -11,7 +10,7 @@ private:
     std::string correoElectronico;
     std::string telefono;
     std::string fechaNacimiento;
-    VectorStrings especialidades;
+	std::string especialidades[10]; // Array to hold up to 10 specialties
 
 public:
     Instructor();

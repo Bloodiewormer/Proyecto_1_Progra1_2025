@@ -2,7 +2,7 @@
 
 VectorInstructores::VectorInstructores()
 {
-    capacidad = 50; // Capacidad inicial
+    capacidad = 50; // Capacidad para instructores
     cantidad = 0;
     instructores = new Instructor * [capacidad];
     for (int i = 0; i < capacidad; i++) {
@@ -29,10 +29,11 @@ bool VectorInstructores::eliminarInstructor(int idInstructor)
 {
     for (int i = 0; i < cantidad; i++) {
         if (instructores[i]->getIdInstructor() == idInstructor) {
-            // Mover todos los elementos una posición hacia atrás
+            // Mover elementos hacia la izquierda
             for (int j = i; j < cantidad - 1; j++) {
                 instructores[j] = instructores[j + 1];
             }
+            instructores[cantidad - 1] = nullptr;
             cantidad--;
             return true;
         }

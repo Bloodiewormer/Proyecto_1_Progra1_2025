@@ -69,9 +69,6 @@
     <ClInclude Include="VectorMedicion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VectorStrings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -114,9 +111,6 @@
       <Filter>Source Files\Container</Filter>
     </ClCompile>
     <ClCompile Include="VectorMedicion.cpp">
-      <Filter>Source Files\Container</Filter>
-    </ClCompile>
-    <ClCompile Include="VectorStrings.cpp">
       <Filter>Source Files\Container</Filter>
     </ClCompile>
     <ClCompile Include="VectorSucursales.cpp">

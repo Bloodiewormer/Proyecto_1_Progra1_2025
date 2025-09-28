@@ -7,19 +7,24 @@ void UI::mostrarBannerBienvenida() {
     std::cout << "========================================\n";
     std::cout << "   Bienvenido al sistema PowerLab Gym   \n";
     std::cout << "========================================\n";
+	pausarPantalla();
 }
 
 void UI::mostrarBannerDespedida() {
+    limpiarPantalla();
     std::cout << "\n========================================\n";
     std::cout << "   Gracias por usar PowerLab Gym System \n";
     std::cout << "========================================\n";
+	pausarPantalla();
 }
 
 void UI::mostrarMensaje(std::string mensaje) {
+    limpiarPantalla();
     std::cout << mensaje << std::endl;
 }
 
 void UI::mostrarError(std::string mensaje) {
+    limpiarPantalla();
     std::cout << "ERROR: " << mensaje << std::endl;
 }
 
@@ -28,6 +33,7 @@ void UI::mostrarTitulo(std::string titulo) {
 }
 
 int UI::mostrarMenuPrincipal() {
+    limpiarPantalla();
     mostrarTitulo("Menu Principal");
     std::cout << "1. Gestionar Sucursales\n";
     std::cout << "2. Gestionar Clientes\n";
@@ -41,6 +47,7 @@ int UI::mostrarMenuPrincipal() {
 }
 
 int UI::mostrarMenuSucursales() {
+    limpiarPantalla();
     mostrarTitulo("Menu Sucursales");
     std::cout << "1. Agregar Sucursal\n";
     std::cout << "2. Listar Sucursales\n";
@@ -49,6 +56,7 @@ int UI::mostrarMenuSucursales() {
 }
 
 int UI::mostrarMenuClientes() {
+    limpiarPantalla();
     mostrarTitulo("Menu Clientes");
     std::cout << "1. Agregar Cliente\n";
     std::cout << "2. Listar Clientes por Sucursal\n";
@@ -58,6 +66,7 @@ int UI::mostrarMenuClientes() {
 }
 
 int UI::mostrarMenuInstructores() {
+    limpiarPantalla();
     mostrarTitulo("Menu Instructores");
     std::cout << "1. Agregar Instructor\n";
     std::cout << "2. Listar Instructores por Sucursal\n";
@@ -67,6 +76,7 @@ int UI::mostrarMenuInstructores() {
 }
 
 int UI::mostrarMenuClases() {
+    limpiarPantalla();
     mostrarTitulo("Menu Clases Grupales");
     std::cout << "1. Agregar Clase\n";
     std::cout << "2. Listar Clases por Sucursal\n";
@@ -77,6 +87,7 @@ int UI::mostrarMenuClases() {
 }
 
 int UI::mostrarMenuMediciones() {
+    limpiarPantalla();
     mostrarTitulo("Menu Mediciones");
     std::cout << "1. Agregar Medicion\n";
     std::cout << "2. Ver Historial de Mediciones\n";
@@ -85,6 +96,7 @@ int UI::mostrarMenuMediciones() {
 }
 
 int UI::mostrarMenuInformes() {
+    limpiarPantalla();
     mostrarTitulo("Menu Informes");
     std::cout << "1. Informe de Clientes por Sucursal\n";
     std::cout << "2. Informe de Instructores por Sucursal\n";
@@ -94,6 +106,7 @@ int UI::mostrarMenuInformes() {
 }
 
 int UI::mostrarMenuRutinas() {
+    limpiarPantalla();
     mostrarTitulo("Menu Rutinas y Ejercicios");
     std::cout << "1. Agregar Ejercicio\n";
     std::cout << "2. Generar Rutina\n";
@@ -103,6 +116,7 @@ int UI::mostrarMenuRutinas() {
 
 // Formularios de ingreso de datos
 Sucursal UI::crearSucursal() {
+    limpiarPantalla();
     mostrarTitulo("Agregar Sucursal");
     int id = solicitarEntero("Codigo de sucursal: ");
     std::string provincia = solicitarCadena("Provincia: ");
@@ -116,6 +130,7 @@ Sucursal UI::crearSucursal() {
 }
 
 Cliente UI::crearCliente() {
+    limpiarPantalla();
     mostrarTitulo("Crear Nuevo Cliente");
     int id = solicitarEntero("ID del cliente: ");
     std::string nombre = solicitarCadena("Nombre completo: ");
@@ -129,6 +144,7 @@ Cliente UI::crearCliente() {
 }
 
 Instructor UI::crearInstructor() {
+    limpiarPantalla();
     mostrarTitulo("Crear Nuevo Instructor");
     int id = solicitarEntero("ID del instructor: ");
     std::string nombre = solicitarCadena("Nombre completo: ");
@@ -152,6 +168,7 @@ Instructor UI::crearInstructor() {
 }
 
 Clase UI::crearClase(Instructor& instructor) {
+    limpiarPantalla();
     mostrarTitulo("Crear Nueva Clase");
     int id = solicitarEntero("ID de la clase: ");
     std::string tipo = solicitarCadena("Tipo de clase: ");
@@ -162,6 +179,7 @@ Clase UI::crearClase(Instructor& instructor) {
 }
 
 ReporteMedicion UI::crearReporteMedicion() {
+    limpiarPantalla();
     mostrarTitulo("Crear Nuevo Reporte de Medicion");
     int id = solicitarEntero("ID de medicion: ");
     std::string fecha = solicitarCadena("Fecha de medicion (DD/MM/AAAA): ");
@@ -180,7 +198,7 @@ ReporteMedicion UI::crearReporteMedicion() {
         edadMetabolica, porcentajeGrasaVisceral, cintura, cadera, pecho, muslo);
 }
 
-// Métodos de solicitud de datos
+// Mï¿½todos de solicitud de datos
 int UI::solicitarIdSucursal() {
     return solicitarEntero("Ingrese el codigo de la sucursal: ");
 }
@@ -215,8 +233,7 @@ void UI::limpiarPantalla() {
 }
 
 void UI::pausarPantalla() {
-    std::cout << "Presione ENTER para continuar...";
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    system("pause");
 }
 
 int UI::solicitarEntero(std::string mensaje) {

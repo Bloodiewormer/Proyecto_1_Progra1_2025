@@ -31,7 +31,6 @@ bool VectorClientes::agregarCliente(Cliente* cliente)
 }
 
 
-
 Cliente** VectorClientes::buscarCliente(int idCliente)
 {
     for (int i = 0; i < cantidad; i++) {

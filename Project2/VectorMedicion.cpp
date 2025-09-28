@@ -2,7 +2,7 @@
 
 VectorMedicion::VectorMedicion()
 {
-    capacidad = 10; // Máximo 10 mediciones según el proyecto
+    capacidad = 10; // Máximo 10 mediciones por cliente según el proyecto
     cantidad = 0;
     mediciones = new ReporteMedicion * [capacidad];
     for (int i = 0; i < capacidad; i++) {
@@ -17,7 +17,7 @@ VectorMedicion::~VectorMedicion()
 
 bool VectorMedicion::agregarMedicion(ReporteMedicion* medicion)
 {
-    if (cantidad >= capacidad) return false; // Máximo 10 mediciones
+    if (cantidad >= capacidad) return false; // No hay espacio
     if (existeMedicion(medicion->getIdMedicion())) return false; // ID repetido
 
     mediciones[cantidad] = medicion;
@@ -29,10 +29,11 @@ bool VectorMedicion::eliminarMedicion(int idMedicion)
 {
     for (int i = 0; i < cantidad; i++) {
         if (mediciones[i]->getIdMedicion() == idMedicion) {
-            // Mover todos los elementos una posición hacia atrás
+            // Mover elementos hacia la izquierda
             for (int j = i; j < cantidad - 1; j++) {
                 mediciones[j] = mediciones[j + 1];
             }
+            mediciones[cantidad - 1] = nullptr;
             cantidad--;
             return true;
         }

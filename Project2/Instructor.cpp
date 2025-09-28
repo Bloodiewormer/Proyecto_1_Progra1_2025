@@ -34,22 +34,34 @@ std::string Instructor::getNombre() const
 
 bool Instructor::agregarEspecialidad(std::string especialidad)
 {
-    return especialidades.agregarString(especialidad);
+
+    for (int i = 0; i < 10; i++) {
+        if (especialidades[i].empty()) {
+            especialidades[i] = especialidad;
+            return true;
+        }
+    }
+    return false;
 }
 
 void Instructor::mostrarEspecialidades()
 {
-    especialidades.mostrarStrings();
+    
+    for (int i = 0; i < 10; i++) {
+        if (!especialidades[i].empty()) {
+            std::cout << especialidades[i] << std::endl;
+        }
+    }
 }
 
 bool Instructor::tieneEspecialidad(std::string especialidad)
 {
-	for (int i = 0; i < especialidades.getCantidad(); i++) {
-		if (especialidades.buscarString(especialidad)) {
-			return true;
-		}
-	}
-	return false;
+    for (int i = 0; i < 10; i++) {
+        if (especialidades[i] == especialidad) {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::string Instructor::toString()
@@ -68,6 +80,10 @@ std::string Instructor::toStringDetalle()
     std::ostringstream oss;
     oss << toString();
     oss << "Especialidades:\n";
-    especialidades.mostrarStrings();
+    for (int i = 0; i < 10; i++) {
+        if (!especialidades[i].empty()) {
+            oss << " - " << especialidades[i] << "\n";
+        }
+	}
     return oss.str();
 }

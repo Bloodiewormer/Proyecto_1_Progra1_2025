@@ -33,7 +33,6 @@
     <ClInclude Include="VectorEjercicio.h" />
     <ClInclude Include="VectorInstructores.h" />
     <ClInclude Include="VectorMedicion.h" />
-    <ClInclude Include="VectorStrings.h" />
     <ClInclude Include="VectorSucursales.h" />
   </ItemGroup>
   <ItemGroup>
@@ -52,7 +51,6 @@
     <ClCompile Include="VectorEjercicio.cpp" />
     <ClCompile Include="VectorInstructores.cpp" />
     <ClCompile Include="VectorMedicion.cpp" />
-    <ClCompile Include="VectorStrings.cpp" />
     <ClCompile Include="VectorSucursales.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

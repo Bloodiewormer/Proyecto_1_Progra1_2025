@@ -2,7 +2,7 @@
 
 VectorEjercicio::VectorEjercicio()
 {
-    capacidad = 100; // Capacidad inicial para batería de ejercicios
+    capacidad = 50; // Capacidad para ejercicios
     cantidad = 0;
     ejercicios = new Ejercicio * [capacidad];
     for (int i = 0; i < capacidad; i++) {
@@ -29,10 +29,10 @@ bool VectorEjercicio::eliminarEjercicio(int idEjercicio)
 {
     for (int i = 0; i < cantidad; i++) {
         if (ejercicios[i]->getIdEjercicio() == idEjercicio) {
-            // Mover todos los elementos una posición hacia atrás
             for (int j = i; j < cantidad - 1; j++) {
                 ejercicios[j] = ejercicios[j + 1];
             }
+            ejercicios[cantidad - 1] = nullptr;
             cantidad--;
             return true;
         }
@@ -58,12 +58,12 @@ bool VectorEjercicio::existeEjercicio(int idEjercicio)
 void VectorEjercicio::mostrarEjercicios()
 {
     if (cantidad == 0) {
-        std::cout << "No hay ejercicios registrados en la bateria." << std::endl;
+        std::cout << "No hay ejercicios registrados." << std::endl;
         return;
     }
 
-    std::cout << "=== BATERIA DE EJERCICIOS ===" << std::endl;
+    std::cout << "=== LISTA DE EJERCICIOS ===" << std::endl;
     for (int i = 0; i < cantidad; i++) {
-        std::cout << i + 1 << ". " << ejercicios[i]->toString();
+        std::cout << i + 1 << ". " << ejercicios[i]->toString() << std::endl;
     }
 }

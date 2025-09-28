@@ -29,10 +29,11 @@ bool VectorSucursales::eliminarSucursal(int idSucursal)
 {
     for (int i = 0; i < cantidad; i++) {
         if (sucursales[i]->getIdSucursal() == idSucursal) {
-            // Mover todos los elementos una posición hacia atrás
+            // Mover elementos hacia la izquierda
             for (int j = i; j < cantidad - 1; j++) {
                 sucursales[j] = sucursales[j + 1];
             }
+            sucursales[cantidad - 1] = nullptr;
             cantidad--;
             return true;
         }
