@@ -17,9 +17,9 @@ private:
 
 public:
     Clase();
-Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor& instructor);    ~Clase();
+    Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor& instructor);
+    ~Clase();
 
-    // Getters
     int getIdClase();
     std::string getTipoClase();
     int getCapacidadMaxima();
@@ -27,13 +27,15 @@ Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor
     int getCantidadInscritos();
     Instructor getInstructor();
 
-    // Gesti�n de clientes
     bool agregarCliente(Cliente& cliente);
     Cliente* buscarCliente(int idCliente);
     void mostrarClientes();
     bool estaLlena();
     bool tieneCliente(int idCliente);
 
+
+    Cliente* getClientePorIndice(int i);
     std::string toString();
+    std::string toStringCorto();
     std::string toStringDetalle();
 };

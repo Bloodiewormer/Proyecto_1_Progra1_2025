@@ -122,25 +122,43 @@ void GymsPowerLab::mostrarClasesPorSucursal(int idSucursal)
 void GymsPowerLab::mostrarClientesPorInstructor(int idInstructor)
 {
     std::cout << "=== Clientes del Instructor " << idInstructor << " ===\n";
-    bool alguno = false;
+    Cliente* lista[500];
+    int nLista = 0;
+
     for (int s = 0; s < 30; s++) {
         Sucursal** ps = sucursales.buscarSucursal(s + 1);
-        if (ps == nullptr) continue;
+        if (ps == 0) continue;
         Sucursal* suc = *ps;
 
         int n = suc->getCantidadClases();
         for (int i = 0; i < n; i++) {
             Clase* c = suc->getClasePorIndice(i);
-            if (c == nullptr) continue;
-            // Se asume que Clase expone getInstructor() y toStringDetalle()/mostrarClientes()
-            if (c->getInstructor().getIdInstructor() == idInstructor) {
-                std::cout << c->toStringDetalle() << "\n";
-                c->mostrarClientes();
-                alguno = true;
+            if (c == 0) continue;
+            if (c->getInstructor().getIdInstructor() != idInstructor) continue;
+
+            int m = c->getCantidadInscritos();
+            for (int j = 0; j < m; j++) {
+                Cliente* cli = c->getClientePorIndice(j);
+                if (cli == 0) continue;
+
+                bool ya = false;
+                for (int k = 0; k < nLista; k++) {
+                    if (lista[k]->getIdCliente() == cli->getIdCliente()) { ya = true; break; }
+                }
+                if (!ya) {
+                    lista[nLista++] = cli;
+                }
             }
         }
     }
-    if (!alguno) std::cout << "(sin clientes)\n";
+
+    if (nLista == 0) {
+        std::cout << "(sin clientes)\n";
+        return;
+    }
+    for (int i = 0; i < nLista; i++) {
+        std::cout << (i + 1) << ". " << lista[i]->toStringCorto() << "\n";
+    }
 }
 
 int GymsPowerLab::getCantidadClasesEnSucursal(int idSucursal)
@@ -177,17 +195,17 @@ void GymsPowerLab::mostrarClasesDeCliente(int idCliente)
     bool alguno = false;
     for (int s = 0; s < 30; s++) {
         Sucursal** ps = sucursales.buscarSucursal(s + 1);
-        if (ps == nullptr) continue;
+        if (ps == 0) continue;
         Sucursal* suc = *ps;
 
         int n = suc->getCantidadClases();
         for (int i = 0; i < n; i++) {
             Clase* c = suc->getClasePorIndice(i);
-            if (c == nullptr) continue;
-            // Se asume que Clase expone buscarCliente(id)
+            if (c == 0) continue;
             Cliente* cli = c->buscarCliente(idCliente);
-            if (cli != nullptr) {
-                std::cout << c->toStringDetalle() << "\n";
+            if (cli != 0) {
+                // usar version corta/resumen para no saturar
+                std::cout << c->toString() << "\n";
                 alguno = true;
             }
         }
@@ -211,9 +229,10 @@ void GymsPowerLab::reporteIMCPorSucursal(int idSucursal)
         Cliente* cli = sucursal->getClientePorIndice(i);
         if (cli == nullptr) continue;
 
+        float imc = -1.0f;
+        ReporteMedicion* ult = cli->obtenerUltimaMedicion();
+        if (ult != nullptr) imc = ult->getIMC();
 
-         float imc = cli->getUltimaMedicion()->getIMC();
-        // Clasificar
         if (imc >= 0.0f) {
             if (imc < 18.5f) bajo++;
             else if (imc < 25.0f) normal++;

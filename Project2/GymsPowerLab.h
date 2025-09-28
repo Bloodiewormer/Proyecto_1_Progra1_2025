@@ -41,7 +41,9 @@ public:
     void mostrarClasesDeCliente(int idCliente);
 
     void mostrarClasesPorSucursal(int idSucursal);
-
-    // NEW: simple helper to avoid \`(*suc)\`
     int getCantidadClasesEnSucursal(int idSucursal);
+
+    // NEW: helpers to avoid duplications and simplify consultas
+    int buscarIdSucursalDeCliente(int idCliente);
+    Instructor* buscarPrimerInstructorDeCliente(int idCliente);
 };

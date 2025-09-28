@@ -4,6 +4,7 @@
 #include "Instructor.h"
 #include "Ejercicio.h"
 #include <sstream>
+
 class Cliente
 {
 private:
@@ -12,7 +13,7 @@ private:
     std::string correoElectronico;
     std::string telefono;
     Fecha fechaNacimiento;
-    char genero; // 'M' o 'F'
+    char genero;
     Fecha fechaInscripcion;
     VectorMedicion historicoMediciones;
     Instructor* instructorAsignado;
@@ -23,7 +24,6 @@ public:
     Cliente(int id, std::string& nombre, std::string& correo, std::string& telefono, Fecha& fechaNac, char genero, Fecha& fechaIns);
     ~Cliente();
 
-    // Getters
     int getIdCliente();
     void setIdCliente(int id);
     std::string getNombre();
@@ -31,7 +31,6 @@ public:
     void setInstructorAsignado(Instructor* instr);
     Instructor* getInstructorAsignado();
 
-    // Mediciones
     bool agregarMedicion(ReporteMedicion& medicion);
     bool eliminarMedicion(int idMedicion);
     ReporteMedicion* buscarMedicion(int idMedicion);
@@ -39,14 +38,14 @@ public:
     void mostrarHistorialMediciones();
     int getCantidadMediciones();
     ReporteMedicion* getMedicionPorIndice(int i);
-    void mostrarHistorialMedicionesOrdenado(); // orden por fecha asc
+    void mostrarHistorialMedicionesOrdenado();
     ReporteMedicion* obtenerUltimaMedicion();
+
     void limpiarRutina();
     bool agregarEjercicioARutina(Ejercicio* e);
     void mostrarRutina();
 
-    ReporteMedicion* getUltimaMedicion();
-
     std::string toString();
     std::string toStringDetalle();
+    std::string toStringCorto();
 };

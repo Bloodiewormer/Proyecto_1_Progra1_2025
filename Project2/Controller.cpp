@@ -1,7 +1,10 @@
 
 #include "Controller.h"
 
-Controller::Controller() {}
+Controller::Controller()
+{
+    cantRutinas = 0;
+}
 Controller::~Controller() {}
 
 void Controller::run()
@@ -115,6 +118,9 @@ void Controller::menuInformes()
         case 1: gym.mostrarClientesPorSucursal(interfaz.solicitarIdSucursal()); break;
         case 2: gym.mostrarInstructoresPorSucursal(interfaz.solicitarIdSucursal()); break;
         case 3: reporteIMC(); break;
+        case 4: listarClientesPorInstructor(); break;
+        case 5: listarInstructoresPorEspecialidad(); break;
+        case 6: verClasesDeCliente() ; break;
         case 0: break;
         default: interfaz.mostrarError("Opcion invalida"); break;
         }
@@ -130,6 +136,7 @@ void Controller::menuRutinas()
         switch (opcion) {
         case 1: agregarEjercicio(); break;
         case 2: generarRutina(); break;
+        case 3: mostrarRutinaDeCliente(); break;
         case 0: break;
         default: interfaz.mostrarError("Opcion invalida"); break;
         }
@@ -260,21 +267,27 @@ void Controller::agregarMedicion()
     interfaz.mostrarMensaje("Medicion agregada correctamente.");
 }
 
-void Controller::agregarEjercicio()
-{
-    interfaz.mostrarTitulo("Agregar Ejercicio");
+void Controller::agregarEjercicio() {
+    std::cout << "--- Agregar Ejercicio ---\n";
     int id = interfaz.solicitarEntero("ID del ejercicio: ");
-    std::string nombre = interfaz.solicitarCadena("Nombre del ejercicio: ");
-    std::string area = interfaz.solicitarCadena("Area (pecho y triceps/biceps/piernas/espalda): ");
-    if (!validarAreaEjercicio(area)) { interfaz.mostrarError("Area invalida."); return; }
+    std::string nombre = interfaz.solicitarCadena("Nombre: ");
+    std::string area = interfaz.solicitarCadena("Area (pecho y triceps, biceps, piernas, espalda): ");
+    if (!validarAreaEjercicio(area)) {
+        interfaz.mostrarError("Area invalida.");
+        return;
+    }
     std::string descripcion = interfaz.solicitarCadena("Descripcion: ");
     int series = interfaz.solicitarEntero("Series: ");
-    int repeticiones = interfaz.solicitarEntero("Repeticiones: ");
+    int rep = interfaz.solicitarEntero("Repeticiones: ");
     float peso = interfaz.solicitarFloat("Peso (kg): ");
 
-    Ejercicio* nuevo = new Ejercicio(id, nombre, area, descripcion, series, repeticiones, peso);
-    if (bateriaEjercicios.agregarEjercicio(nuevo)) interfaz.mostrarMensaje("Ejercicio agregado exitosamente.");
-    else interfaz.mostrarError("No se pudo agregar el ejercicio.");
+    Ejercicio* e = new Ejercicio(id, nombre, area, descripcion, series, rep, peso);
+    if (bateriaEjercicios.agregarEjercicio(e)) {
+        interfaz.mostrarMensaje("Ejercicio agregado a la bateria.");
+    } else {
+        delete e;
+        interfaz.mostrarError("No se pudo agregar el ejercicio (id repetido o sin espacio).");
+    }
 }
 
 void Controller::listarClientesPorSucursal()
@@ -298,12 +311,39 @@ void Controller::listarClasesPorSucursal()
     gym.mostrarClasesPorSucursal(idSucursal);
 }
 
-void Controller::mostrarDetalleCliente()
-{
-    int idCliente = interfaz.solicitarIdCliente();
-    Cliente* cliente = gym.buscarClienteEnTodasSucursales(idCliente);
-    if (cliente != nullptr) interfaz.mostrarMensaje(cliente->toStringDetalle());
-    else interfaz.mostrarError("Cliente no encontrado.");
+void Controller::mostrarDetalleCliente() {
+    int id = interfaz.solicitarIdCliente();
+
+    // localizar sucursal y cliente
+    Sucursal* sucEncontrada = 0;
+    Cliente* cli = 0;
+    for (int s = 0; s < 30; s++) {
+        Sucursal* suc = gym.buscarSucursal(s + 1);
+        if (suc == 0) continue;
+        Cliente* c = suc->buscarCliente(id);
+        if (c != 0) {
+            sucEncontrada = suc;
+            cli = c;
+            break;
+        }
+    }
+
+    if (cli == 0) {
+        interfaz.mostrarError("Cliente no encontrado.");
+        return;
+    }
+
+    std::cout << "=== DETALLE DEL CLIENTE ===\n";
+        if (sucEncontrada != 0) {
+        std::cout << "Sucursal: " << sucEncontrada->toString() << "\n";
+    } else {
+        std::cout << "Sucursal: (no encontrada)\n";
+    }
+    std::cout << cli->toStringDetalle() << "\n";
+    cli->mostrarHistorialMediciones();
+
+
+    interfaz.pausarPantalla();
 }
 
 void Controller::mostrarDetalleInstructor()
@@ -316,42 +356,106 @@ void Controller::mostrarDetalleInstructor()
 
 void Controller::mostrarDetalleClase()
 {
-    gym.mostrarSucursales();
     int idSucursal = interfaz.solicitarIdSucursal();
-    gym.mostrarClasesPorSucursal(idSucursal);
     int idClase = interfaz.solicitarIdClase();
+
     Sucursal* suc = gym.buscarSucursal(idSucursal);
-    if (suc != nullptr) {
-        Clase* clase = suc->buscarClase(idClase);
-        if (clase != nullptr) {
-            interfaz.mostrarMensaje(clase->toStringDetalle());
-            clase->mostrarClientes(); // mostrar participantes reales
-        } else {
-            interfaz.mostrarError("Clase no encontrada.");
-        }
-    } else {
+    if (suc == 0) {
         interfaz.mostrarError("Sucursal no encontrada.");
+        return;
     }
-}
-
-void Controller::mostrarHistorialMediciones()
-{
-    interfaz.limpiarPantalla();
-    interfaz.mostrarTitulo("Historial de Mediciones");
-
-    gym.mostrarSucursales();
-    int idSucursal = interfaz.solicitarIdSucursal();
-    gym.mostrarClientesPorSucursal(idSucursal);
-
-    int idCliente = interfaz.solicitarIdCliente();
-    Cliente* cliente = gym.buscarClienteEnTodasSucursales(idCliente);
-    if (cliente == nullptr) {
-        interfaz.mostrarError("El cliente no existe.");
+    Clase* cls = suc->buscarClase(idClase);
+    if (cls == 0) {
+        interfaz.mostrarError("Clase no encontrada.");
         return;
     }
 
-    cliente->mostrarHistorialMediciones();
+    interfaz.limpiarPantalla();
+    std::cout << "=== DETALLE DE LA CLASE ===\n";
 
+    // Mostrar info de la clase (usar toStringDetalle si existe, sino toString)
+    std::string textoClase = cls->toString();
+    std::cout << textoClase << "\n";
+
+    // Instructor
+    Instructor inst = cls->getInstructor();
+    std::cout << "Instructor: " << inst.getIdInstructor() << " - " << inst.getNombre() << "\n";
+
+    // Listar clientes inscritos
+    std::cout << "Clientes inscritos:\n";
+    int m = cls->getCantidadInscritos();
+    if (m == 0) {
+        std::cout << "(sin clientes)\n";
+    } else {
+        for (int i = 0; i < m; i++) {
+            Cliente* c = cls->getClientePorIndice(i);
+            if (c != 0) {
+                std::cout << (i + 1) << ". " << c->toStringCorto() << "\n";
+            }
+        }
+    }
+
+    interfaz.pausarPantalla();
+}
+
+void Controller::mostrarHistorialMediciones() {
+    int id = interfaz.solicitarIdCliente();
+
+    Cliente* cli = gym.buscarClienteEnTodasSucursales(id);
+    if (cli == 0) {
+        interfaz.mostrarError("Cliente no encontrado.");
+        return;
+    }
+
+    // Se asume que Cliente expone getCantidadMediciones() y getMedicionPorIndice(i)
+    int n = cli->getCantidadMediciones();
+    if (n == 0) {
+        interfaz.mostrarMensaje("El cliente no tiene mediciones.");
+        return;
+    }
+
+    // copiar punteros y ordenar por fecha descendente (burbuja simple)
+    ReporteMedicion* arr[20];
+    if (n > 20) n = 20; // seguridad sencilla
+    for (int i = 0; i < n; i++) arr[i] = cli->getMedicionPorIndice(i);
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            Fecha a = arr[j]->getFecha();
+            Fecha b = arr[j + 1]->getFecha();
+            bool menor = false;
+            if (a.getAnio() < b.getAnio()) menor = true;
+            else if (a.getAnio() == b.getAnio() && a.getMes() < b.getMes()) menor = true;
+            else if (a.getAnio() == b.getAnio() && a.getMes() == b.getMes() && a.getDia() < b.getDia()) menor = true;
+            if (menor) {
+                ReporteMedicion* tmp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = tmp;
+            }
+        }
+    }
+
+    std::cout << "=== HISTORIAL DE MEDICIONES (recientes primero) ===\n";
+    for (int i = 0; i < n; i++) {
+        std::cout << i + 1 << ". " << arr[i]->toString() << "\n";
+    }
+
+    int idMed = interfaz.solicitarEntero("Ingrese ID de medicion para ver detalle (0 = volver): ");
+    if (idMed == 0) return;
+
+    // buscar por id en el arreglo ordenado
+    ReporteMedicion* sel = 0;
+    for (int i = 0; i < n; i++) {
+        if (arr[i]->getIdMedicion() == idMed) {
+            sel = arr[i];
+            break;
+        }
+    }
+    if (sel == 0) {
+        interfaz.mostrarError("Medicion no encontrada.");
+        return;
+    }
+    std::cout << sel->toStringDetalle() << "\n";
     interfaz.pausarPantalla();
 }
 
@@ -377,7 +481,7 @@ void Controller::reporteIMC()
         Cliente* cli = suc->getClientePorIndice(i);
         if (cli == nullptr) continue;
 
-        ReporteMedicion* ult = cli->getUltimaMedicion();
+        ReporteMedicion* ult = cli->obtenerUltimaMedicion();
         if (ult == nullptr) continue;
 
         float imc = ult->getIMC();
@@ -416,46 +520,89 @@ void Controller::matricularClienteEnClase()
     else interfaz.mostrarError("No se pudo matricular el cliente.");
 }
 
-void Controller::generarRutina()
-{
-    interfaz.mostrarTitulo("Generar Rutina");
-    bateriaEjercicios.mostrarEjercicios();
-    interfaz.mostrarMensaje("Seleccione ejercicios por area para crear la rutina.");
-}
-
-
-void Controller::listarClientesPorInstructor()
-{
-    interfaz.limpiarPantalla();
-    interfaz.mostrarTitulo("Listar Clientes por Instructor");
-
-    gym.mostrarSucursales();
-    int idSuc = interfaz.solicitarIdSucursal();
-    gym.mostrarInstructoresPorSucursal(idSuc);
-
-    int idInstructor = interfaz.solicitarIdInstructor();
-    interfaz.limpiarPantalla();
-    gym.mostrarClientesPorInstructor(idInstructor);
-    interfaz.pausarPantalla();
-}
-
-void Controller::listarInstructoresPorEspecialidad()
-{
-    interfaz.limpiarPantalla();
-    interfaz.mostrarTitulo("Listar Instructores por Especialidad");
-    interfaz.mostrarMensaje("Especialidades validas: CrossFit, HIIT, TRX, Pesas, Spinning, Cardio, Yoga, Zumba");
-
-    std::string especialidad;
-    while (true) {
-        especialidad = interfaz.solicitarCadena("Especialidad: ");
-        if (validarEspecialidadInstructor(especialidad)) break;
-        interfaz.mostrarError("Especialidad invalida. Intente nuevamente.");
+void Controller::generarRutina() {
+    int id = interfaz.solicitarIdCliente();
+    Cliente* cli = gym.buscarClienteEnTodasSucursales(id);
+    if (cli == 0) {
+        interfaz.mostrarError("Cliente no encontrado.");
+        return;
     }
 
-    interfaz.limpiarPantalla();
-    gym.mostrarInstructoresPorEspecialidad(especialidad);
+    std::string area = interfaz.solicitarCadena("Area (pecho y triceps, biceps, piernas, espalda): ");
+    if (!validarAreaEjercicio(area)) {
+        interfaz.mostrarError("Area invalida.");
+        return;
+    }
+
+    // recolectar ejercicios por area desde la bateria
+    Ejercicio* seleccion[10];
+    int cant = 0;
+
+    // Se asume que VectorEjercicio expone getCantidad() y getEjercicioPorIndice(i)
+    int total = bateriaEjercicios.getCantidad();
+    for (int i = 0; i < total; i++) {
+        Ejercicio* e = bateriaEjercicios.getEjercicioPorIndice(i);
+        if (e == 0) continue;
+        if (e->getArea() == area) {
+            if (cant < 10) {
+                seleccion[cant] = e;
+                cant++;
+            }
+        }
+    }
+
+    if (cant == 0) {
+        interfaz.mostrarMensaje("No hay ejercicios en esa area.");
+        return;
+    }
+
+    guardarRutinaParaCliente(id, seleccion, cant);
+
+    std::cout << "=== RUTINA GENERADA PARA CLIENTE " << id << " ===\n";
+    for (int i = 0; i < cant; i++) {
+        std::cout << i + 1 << ". " << seleccion[i]->toStringDetalle() << "\n";
+    }
     interfaz.pausarPantalla();
 }
+
+
+void Controller::listarClientesPorInstructor() {
+    int idInst = interfaz.solicitarIdInstructor();
+    gym.mostrarClientesPorInstructor(idInst);
+    interfaz.pausarPantalla();
+}
+
+void Controller::listarInstructoresPorEspecialidad() {
+    std::string esp = interfaz.solicitarCadena("Especialidad (CrossFit, HIIT, TRX, Pesas, Spinning, Cardio, Yoga, Zumba): ");
+    if (!validarEspecialidadInstructor(esp)) {
+        interfaz.mostrarError("Especialidad invalida.");
+        return;
+    }
+    gym.mostrarInstructoresPorEspecialidad(esp);
+    interfaz.pausarPantalla();
+}
+
+void Controller::mostrarRutinaDeCliente() {
+    int id = interfaz.solicitarIdCliente();
+    int pos = buscarIndiceRutinaPorCliente(id);
+    if (pos == -1) {
+        interfaz.mostrarMensaje("El cliente no tiene rutina generada.");
+        return;
+    }
+    std::cout << "=== RUTINA DEL CLIENTE " << id << " ===\n";
+    for (int i = 0; i < rutinas[pos].cantidad; i++) {
+        Ejercicio* e = rutinas[pos].ejercicios[i];
+        if (e != 0) std::cout << i + 1 << ". " << e->toStringDetalle() << "\n";
+    }
+    interfaz.pausarPantalla();
+}
+
+void Controller::verClasesDeCliente() {
+    int id = interfaz.solicitarIdCliente();
+    gym.mostrarClasesDeCliente(id);
+    interfaz.pausarPantalla();
+}
+
 
 bool Controller::validarEspecialidadInstructor(std::string especialidad)
 {
@@ -479,6 +626,27 @@ std::string Controller::obtenerEspecialidadDeTipo(std::string tipo)
     return "";
 }
 
+int Controller::buscarIndiceRutinaPorCliente(int idCliente) {
+    for (int i = 0; i < cantRutinas; i++) {
+        if (rutinas[i].idCliente == idCliente) return i;
+    }
+    return -1;
+}
+
+void Controller::guardarRutinaParaCliente(int idCliente, Ejercicio** lista, int n) {
+    int pos = buscarIndiceRutinaPorCliente(idCliente);
+    if (pos == -1) {
+        if (cantRutinas >= 100) return; // sin espacio
+        pos = cantRutinas;
+        rutinas[pos].idCliente = idCliente;
+        rutinas[pos].cantidad = 0;
+        cantRutinas++;
+    }
+    // copiar hasta 10
+    if (n > 10) n = 10;
+    rutinas[pos].cantidad = n;
+    for (int i = 0; i < n; i++) rutinas[pos].ejercicios[i] = lista[i];
+}
 void Controller::cargarDatosPrueba()
 {
     // Sucursales
@@ -674,3 +842,4 @@ void Controller::cargarDatosPrueba()
 
     interfaz.mostrarMensaje("Datos de prueba cargados exitosamente:\n- 2 Sucursales (San Jose y Cartago)\n- 5 Clientes\n- 3 Instructores\n- 3 Clases\n- 8 Ejercicios\n- Mediciones y Matriculas creadas");
 }
+

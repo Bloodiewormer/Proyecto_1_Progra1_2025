@@ -6,8 +6,6 @@ Clase::Clase()
     tipoClase = "";
     capacidadMaxima = 0;
     horario = "";
-    // instructorAsignado se inicializa por defecto
-    // clientesInscritos se inicializa por defecto
 }
 
 Clase::Clase(int id, std::string& tipo, int capacidad, std::string& horario, Instructor& instructor)
@@ -19,49 +17,23 @@ Clase::Clase(int id, std::string& tipo, int capacidad, std::string& horario, Ins
     instructorAsignado = instructor;
 }
 
-Clase::~Clase()
-{
-}
+Clase::~Clase() { }
 
-int Clase::getIdClase() 
-{
-    return idClase;
-}
-
-std::string Clase::getTipoClase() 
-{
-    return tipoClase;
-}
-
-int Clase::getCapacidadMaxima() 
-{
-    return capacidadMaxima;
-}
-
-int Clase::getCuposDisponibles() 
-{
-	return capacidadMaxima - clientesInscritos.getCantidad();
-}
-
-int Clase::getCantidadInscritos() 
-{
-    return clientesInscritos.getCantidad();
-}
-
-Instructor Clase::getInstructor() 
-{
-    return instructorAsignado;
-}
+int Clase::getIdClase() { return idClase; }
+std::string Clase::getTipoClase() { return tipoClase; }
+int Clase::getCapacidadMaxima() { return capacidadMaxima; }
+int Clase::getCuposDisponibles() { return capacidadMaxima - clientesInscritos.getCantidad(); }
+int Clase::getCantidadInscritos() { return clientesInscritos.getCantidad(); }
+Instructor Clase::getInstructor() { return instructorAsignado; }
 
 bool Clase::agregarCliente(Cliente& cliente)
 {
     if (estaLlena()) return false;
     Cliente* ya = buscarCliente(cliente.getIdCliente());
-    if (ya != nullptr) return false;
+    if (ya != 0) return false;
     bool ok = clientesInscritos.agregarCliente(&cliente);
     if (ok) {
-        // asignar instructor si el cliente no tiene
-        if (cliente.getInstructorAsignado() == nullptr) {
+        if (cliente.getInstructorAsignado() == 0) {
             cliente.setInstructorAsignado(&instructorAsignado);
         }
     }
@@ -71,9 +43,8 @@ bool Clase::agregarCliente(Cliente& cliente)
 Cliente* Clase::buscarCliente(int idCliente)
 {
     Cliente** c = clientesInscritos.buscarCliente(idCliente);
-    if (c != nullptr) return *c;
-    return nullptr;
-
+    if (c != 0) return *c;
+    return 0;
 }
 
 void Clase::mostrarClientes()
@@ -81,14 +52,12 @@ void Clase::mostrarClientes()
     clientesInscritos.mostrarClientes();
 }
 
-bool Clase::estaLlena() 
-{
-    return clientesInscritos.getCantidad() >= capacidadMaxima;
-}
+bool Clase::estaLlena() { return clientesInscritos.getCantidad() >= capacidadMaxima; }
+bool Clase::tieneCliente(int idCliente) { return buscarCliente(idCliente) != 0; }
 
-bool Clase::tieneCliente(int idCliente)
+Cliente* Clase::getClientePorIndice(int i)
 {
-    return buscarCliente(idCliente) != nullptr;
+    return clientesInscritos.getClientePorIndice(i);
 }
 
 std::string Clase::toString()
@@ -99,6 +68,14 @@ std::string Clase::toString()
     oss << "Horario: " << horario << " | ";
     oss << "Instructor: " << instructorAsignado.getNombre() << " | ";
     oss << "Cupo: " << getCantidadInscritos() << "/" << capacidadMaxima;
+    return oss.str();
+}
+
+std::string Clase::toStringCorto()
+{
+    std::ostringstream oss;
+    oss << "ID " << idClase << " - " << tipoClase << " (" << horario << ") - "
+        << instructorAsignado.getNombre() << " - " << getCantidadInscritos() << "/" << capacidadMaxima;
     return oss.str();
 }
 
@@ -114,11 +91,16 @@ std::string Clase::toStringDetalle()
     oss << "Matriculados: " << getCantidadInscritos() << "\n";
     oss << "Cupos disponibles: " << getCuposDisponibles() << "\n";
     oss << "--- Participantes ---\n";
-    if (getCantidadInscritos() == 0) {
+    int n = clientesInscritos.getCantidad();
+    if (n == 0) {
         oss << "(sin clientes)\n";
     } else {
-        oss << "Clientes inscritos:\n";
-        clientesInscritos.mostrarClientes();
+        for (int i = 0; i < n; i++) {
+            Cliente* cli = clientesInscritos.getClientePorIndice(i);
+            if (cli != 0) {
+                oss << " - " << cli->getIdCliente() << " | " << cli->getNombre() << "\n";
+            }
+        }
     }
     return oss.str();
 }

@@ -78,4 +78,5 @@ void VectorMedicion::mostrarMediciones()
     for (int i = 0; i < cantidad; i++) {
         std::cout << i + 1 << ". " << mediciones[i]->toString() << std::endl;
     }
+
 }

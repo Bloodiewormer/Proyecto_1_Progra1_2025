@@ -1,5 +1,3 @@
-// C++
-// File: 'Project2/Cliente.cpp'
 #include "Cliente.h"
 
 Cliente::Cliente()
@@ -102,9 +100,7 @@ void Cliente::mostrarHistorialMedicionesOrdenado()
 
 ReporteMedicion* Cliente::obtenerUltimaMedicion()
 {
-
-return nullptr;
-
+return historicoMediciones.getMedicionPorIndice( getCantidadMediciones() - 1 );
 
 }
 
@@ -134,21 +130,7 @@ void Cliente::mostrarRutina()
     }
 }
 
-ReporteMedicion * Cliente::getUltimaMedicion()
-{
-    int n = getCantidadMediciones();
-    if (n == 0) return nullptr;
-    ReporteMedicion* ultima = getMedicionPorIndice(0);
-    for (int i = 1; i < n; i++) {
-        ReporteMedicion* actual = getMedicionPorIndice(i);
-        if (actual->getFecha().getAnio() > ultima->getFecha().getAnio() ||
-            (actual->getFecha().getAnio() == ultima->getFecha().getAnio() && actual->getFecha().getMes() > ultima->getFecha().getMes()) ||
-            (actual->getFecha().getAnio() == ultima->getFecha().getAnio() && actual->getFecha().getMes() == ultima->getFecha().getMes() && actual->getFecha().getDia() > ultima->getFecha().getDia())) {
-            ultima = actual;
-        }
-    }
-    return ultima;
-}
+
 
 
 std::string Cliente::toString()
@@ -172,11 +154,17 @@ std::string Cliente::toStringDetalle()
     std::ostringstream oss;
     oss << toString();
     oss << "Historial de Mediciones (ordenadas por fecha):\n";
-    // imprimir ordenado en el stream
-    int n = getCantidadMediciones();
-    if (n == 0) { oss << "(sin mediciones)\n"; return oss.str(); }
-    historicoMediciones.mostrarMediciones();
+
+
+
 
 
 	return oss.str();
+}
+
+std::string Cliente::toStringCorto()
+{
+    std::ostringstream oss;
+    oss << "ID: " << idCliente << " | " << nombre<<std::endl;
+    return oss.str();
 }

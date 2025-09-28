@@ -103,6 +103,9 @@ int UI::mostrarMenuInformes() {
     std::cout << "1. Informe de Clientes por Sucursal\n";
     std::cout << "2. Informe de Instructores por Sucursal\n";
     std::cout << "3. Informe IMC por Sucursal\n";
+    std::cout << "4. Lista de Clientes por Instructor\n";
+    std::cout << "5. Lista de Instructores por Especialidad\n";
+    std::cout << "6. Clases matriculadas por Cliente\n";
     std::cout << "0. Volver\n";
     return solicitarEntero("Seleccione una opcion: ");
 }
@@ -112,6 +115,7 @@ int UI::mostrarMenuRutinas() {
     mostrarTitulo("Menu Rutinas y Ejercicios");
     std::cout << "1. Agregar Ejercicio\n";
     std::cout << "2. Generar Rutina\n";
+    std::cout << "3. Mostrar Rutina de Cliente\n";
     std::cout << "0. Volver\n";
     return solicitarEntero("Seleccione una opcion: ");
 }

@@ -12,6 +12,8 @@ private:
 public:
 	VectorEjercicio();
 	~VectorEjercicio();
+	int getCantidad();
+	Ejercicio* getEjercicioPorIndice(int i);
 	bool agregarEjercicio(Ejercicio* ejercicio);
 	bool eliminarEjercicio(int idEjercicio);
 	Ejercicio** buscarEjercicio(int idEjercicio);

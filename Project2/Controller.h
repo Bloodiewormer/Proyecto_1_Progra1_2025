@@ -1,8 +1,21 @@
-// File: 'Project2/Controller.h'  (add new helpers)
+// C++
+// File: 'Project2/Controller.h'
 #pragma once
 #include "GymsPowerLab.h"
 #include "UI.h"
 #include "VectorEjercicio.h"
+
+class RutinaCliente {
+public:
+    int idCliente;
+    Ejercicio* ejercicios[10];
+    int cantidad;
+    RutinaCliente() {
+        idCliente = 0;
+        cantidad = 0;
+        for (int i = 0; i < 10; i++) ejercicios[i] = 0;
+    }
+};
 
 class Controller
 {
@@ -10,7 +23,8 @@ private:
     GymsPowerLab gym;
     UI interfaz;
     VectorEjercicio bateriaEjercicios;
-
+    RutinaCliente rutinas[100];
+    int cantRutinas;
     void menuSucursales();
     void menuClientes();
     void menuInstructores();
@@ -28,7 +42,7 @@ private:
 
     void listarClientesPorSucursal();
     void listarInstructoresPorSucursal();
-    void listarClasesPorSucursal();    
+    void listarClasesPorSucursal();
     void mostrarDetalleCliente();
     void mostrarDetalleInstructor();
     void mostrarDetalleClase();
@@ -39,12 +53,16 @@ private:
 
     void listarClientesPorInstructor();
     void listarInstructoresPorEspecialidad();
+    void verClasesDeCliente();
+    void mostrarRutinaDeCliente();
 
     bool validarEspecialidadInstructor(std::string especialidad);
     bool validarAreaEjercicio(std::string area);
 
-    // helper: intenta extraer la especialidad base del texto de tipo de clase
     std::string obtenerEspecialidadDeTipo(std::string tipo);
+
+    int buscarIndiceRutinaPorCliente(int idCliente);
+    void guardarRutinaParaCliente(int idCliente, Ejercicio** lista, int n);
 
     void cargarDatosPrueba();
 
@@ -53,3 +71,5 @@ public:
     ~Controller();
     void run();
 };
+
+

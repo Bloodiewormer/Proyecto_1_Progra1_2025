@@ -15,6 +15,17 @@ VectorEjercicio::~VectorEjercicio()
     delete[] ejercicios;
 }
 
+int VectorEjercicio::getCantidad()
+{
+    return cantidad;
+}
+
+Ejercicio* VectorEjercicio::getEjercicioPorIndice(int i)
+{
+    if (i < 0 || i >= cantidad) return nullptr;
+    return ejercicios[i];
+}
+
 bool VectorEjercicio::agregarEjercicio(Ejercicio* ejercicio)
 {
     if (cantidad >= capacidad) return false; // No hay espacio
